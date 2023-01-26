@@ -22,6 +22,7 @@ export const createStatusCheck = async (): Promise<{ checkId: number }> => {
     status: 'in_progress',
     name: inputs?.checkName,
   });
+  console.log('createStatusCheck     : ', data);
   return { checkId: data?.id };
 };
 
@@ -48,9 +49,12 @@ export const onCheckRateLimitingError = async (
     const message = `## Eslint checks successfully completed. No Error and warning!!! \n`;
     const text =
       '![This is a alt text.](https://images.selise.club/6add5d48b5e77bc5848e58a35d5cadef.webp "completed.")';
-    await updateChecksRun(checkId, conclusion, message, report?.annotations, status, text);
+    const data = await updateChecksRun(checkId, conclusion, message, report?.annotations, status, text);
+    console.log('!report?.annotations?.length       :', data);
     return;
   }
+
+
   const numberOfAnnotations = report?.annotations?.length;
   const batchSize = 50;
   const batchesLimit = Math.ceil(numberOfAnnotations / batchSize);
@@ -59,7 +63,9 @@ export const onCheckRateLimitingError = async (
     const annotationBatch = report?.annotations?.splice(0, batchSize);
     status = batch >= batchesLimit ? 'completed' : 'in_progress';
     const finalConclusion = status === 'completed' ? conclusion : null;
-    await updateChecksRun(checkId, finalConclusion, batchMessage, annotationBatch, status, report?.markdown);
+    const data = await updateChecksRun(checkId, finalConclusion, batchMessage, annotationBatch, status, report?.markdown);
+     console.log('report?.annotations?.length       :', data);
+
   }
 };
 

@@ -162,6 +162,9 @@ export async function getPullRequestChangedAnalyzedReport(reportJS: ESLintReport
       repo: repo,
       pull_number: utils?.pullRequest?.number,
     });
+
+
+    console.log('utils?.octokit?.rest?.pulls        :', data);
     const changedFiles = data?.map((prFiles) => prFiles?.filename);
   
     const pullRequestFilesReportJS: ESLintReport = reportJS?.filter((file) => {
