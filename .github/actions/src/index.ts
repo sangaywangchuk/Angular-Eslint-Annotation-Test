@@ -9,7 +9,7 @@ import { createStatusCheck, onCheckRateLimitingError } from './checksApi';
      * Eslint report to javascript object conversion
      */
     const parsedEslintReportJs = eslintJsonReportToJsObject(inputs?.eslintReportFile);
-        console.log('parsedEslintReportJs:    ', parsedEslintReportJs);
+        console.log('parsedEslintReportJs:    ', JSON.stringify(parsedEslintReportJs));
 
     const { checkId } = await createStatusCheck();
     console.log('checkId     :', checkId);
