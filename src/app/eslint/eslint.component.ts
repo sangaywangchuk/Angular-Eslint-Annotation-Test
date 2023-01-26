@@ -6,7 +6,5 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./eslint.component.scss']
 })
 export class EslintComponent {
-  constructor(){
-
-  }
+  name = 'hello';
 }
