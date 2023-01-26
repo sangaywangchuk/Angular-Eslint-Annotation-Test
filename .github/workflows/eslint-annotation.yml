@@ -34,7 +34,7 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
       - name: Generate eslint Report
-        run: yarn lint:report
+        run: eslint . --quiet -o eslint-report.json -f json; exit 0
       - name: Annotate Eslint on PR filess
         uses: ./.github/actions/
         with:
