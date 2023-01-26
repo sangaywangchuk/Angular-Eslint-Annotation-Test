@@ -13,10 +13,9 @@ import { createStatusCheck, onCheckRateLimitingError } from './checksApi';
     const { checkId } = await createStatusCheck();
 
     const report = await getPullRequestChangedAnalyzedReport(parsedEslintReportJs);
-
     const conclusion = report?.success ? 'success' : 'failure';
-
     await onCheckRateLimitingError(checkId, conclusion, report, 'completed');
+    
   } catch (e) {
     const error = e as Error;
     console.log('personal error: ', error.toString());

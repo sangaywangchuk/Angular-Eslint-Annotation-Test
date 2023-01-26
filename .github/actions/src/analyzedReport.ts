@@ -1,5 +1,7 @@
 import type { ESLintReport, ChecksUpdateParamsOutputAnnotations, AnalyzedESLintReport } from './types';
 import utils from './utils';
+import * as core from '@actions/core';
+
 const { sha, owner, repo, githubWorkSpace } = utils;
 
 /**
@@ -153,36 +155,51 @@ export default function getAnalyzedReport(files: ESLintReport): AnalyzedESLintRe
  * @param pullReqNumber
  * @returns
  */
-export async function getPullRequestChangedAnalyzedReport(reportJS: ESLintReport): Promise<AnalyzedESLintReport> {
-  const { data } = await utils?.octokit?.rest?.pulls?.listFiles({
-    owner: owner,
-    repo: repo,
-    pull_number: utils?.pullRequest?.number,
-  });
-  const changedFiles = data?.map((prFiles) => prFiles?.filename);
-
-  const pullRequestFilesReportJS: ESLintReport = reportJS?.filter((file) => {
-    file.filePath = file?.filePath?.replace(githubWorkSpace + '/', '');
-    return changedFiles?.indexOf(file?.filePath) !== -1;
-  });
-
-  const nonPullRequestFilesReportJS: ESLintReport = reportJS?.filter((file) => {
-    file.filePath = file?.filePath?.replace(githubWorkSpace + '/', '');
-    return changedFiles?.indexOf(file?.filePath) === -1;
-  });
-
-  const analyzedPullRequestReport = getAnalyzedReport(pullRequestFilesReportJS);
-  const combinedSummary = `${analyzedPullRequestReport?.summary} in pull request changed files.`;
-  const combinedMarkdown = `# Pull Request Changed Files ESLint Results: 
-    **${analyzedPullRequestReport?.summary}**
-    ${analyzedPullRequestReport?.markdown}
-  `;
-  return {
-    errorCount: analyzedPullRequestReport?.errorCount,
-    warningCount: analyzedPullRequestReport?.warningCount,
-    markdown: combinedMarkdown,
-    success: analyzedPullRequestReport?.success,
-    summary: combinedSummary,
-    annotations: analyzedPullRequestReport?.annotations,
-  };
+export async function getPullRequestChangedAnalyzedReport(reportJS: ESLintReport): Promise<AnalyzedESLintReport > {
+  try {
+    const { data } = await utils?.octokit?.rest?.pulls?.listFiles({
+      owner: owner,
+      repo: repo,
+      pull_number: utils?.pullRequest?.number,
+    });
+    const changedFiles = data?.map((prFiles) => prFiles?.filename);
+  
+    const pullRequestFilesReportJS: ESLintReport = reportJS?.filter((file) => {
+      file.filePath = file?.filePath?.replace(githubWorkSpace + '/', '');
+      return changedFiles?.indexOf(file?.filePath) !== -1;
+    });
+  
+    const nonPullRequestFilesReportJS: ESLintReport = reportJS?.filter((file) => {
+      file.filePath = file?.filePath?.replace(githubWorkSpace + '/', '');
+      return changedFiles?.indexOf(file?.filePath) === -1;
+    });
+  
+    const analyzedPullRequestReport = getAnalyzedReport(pullRequestFilesReportJS);
+    const combinedSummary = `${analyzedPullRequestReport?.summary} in pull request changed files.`;
+    const combinedMarkdown = `# Pull Request Changed Files ESLint Results: 
+      **${analyzedPullRequestReport?.summary}**
+      ${analyzedPullRequestReport?.markdown}
+    `;
+    return {
+      errorCount: analyzedPullRequestReport?.errorCount,
+      warningCount: analyzedPullRequestReport?.warningCount,
+      markdown: combinedMarkdown,
+      success: analyzedPullRequestReport?.success,
+      summary: combinedSummary,
+      annotations: analyzedPullRequestReport?.annotations,
+    };
+    
+  } catch (err) {
+    const error = err as Error;
+    core.setFailed(error?.message)
+    return {
+      errorCount: 0,
+      warningCount: 0,
+      markdown: '',
+      success: false,
+      summary: error?.message,
+      annotations: [],
+    };
+  }
+  
 }
