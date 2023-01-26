@@ -13114,10 +13114,12 @@ const core = __importStar(__nccwpck_require__(2186));
 /**
  * Github action inputs
  */
+const githubToken = core === null || core === void 0 ? void 0 : core.getInput('token', { required: true });
 const checkName = core === null || core === void 0 ? void 0 : core.getInput('check-name', { required: false });
 const eslintReportFile = core === null || core === void 0 ? void 0 : core.getInput('eslint-report-json', { required: true });
 exports["default"] = {
-    checkName,
+    token: githubToken,
+    checkName: 'eslint test',
     eslintReportFile,
 };
 
@@ -13152,9 +13154,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const github = __importStar(__nccwpck_require__(5438));
+const inputs_1 = __importDefault(__nccwpck_require__(7063));
 const ownership = {
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
@@ -13181,8 +13187,7 @@ const getSha = () => {
     return sha;
 };
 const getOctokit = () => {
-    var _a;
-    const octokit = github.getOctokit((_a = process === null || process === void 0 ? void 0 : process.env) === null || _a === void 0 ? void 0 : _a.GITHUB_TOKEN);
+    const octokit = github.getOctokit(inputs_1.default === null || inputs_1.default === void 0 ? void 0 : inputs_1.default.token);
     return octokit;
 };
 exports["default"] = {

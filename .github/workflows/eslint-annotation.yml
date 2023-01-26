@@ -38,4 +38,5 @@ jobs:
       - name: Annotate Eslint on PR filess
         uses: ./.github/actions/
         with:
+          token: ${{secrets.GITHUB_TOKEN}}
           eslint-report-json: 'eslint-report.json'
